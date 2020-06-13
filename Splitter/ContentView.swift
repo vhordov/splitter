@@ -6,43 +6,60 @@
 //  Copyright © 2020 Vadym Hordov. All rights reserved.
 //
 
-// Homework #1
-
-// Adjust the following content view to include the following items inside form:
-// 1. Text with some greeting message
-// 2. 3 TextFields - for first name, last name, email (those should be states)
-// 3. Text that will display Full name
-// 4. Create an array of fishname names called "fish"
-// 5. Create picker that would allow users to select a fish from that array
-// Note: The whole view must be a Navigation view with a Large title.
-
 import SwiftUI
 
 struct ContentView: View {
-    @State private var count: Int = 0
-    @State private var name: String = ""
-    var greeting: String = "Hello World!"
-    let friends = ["Dima", "Vadya", "Vova"]
-    @State private var selectedFriend = 0
+    @State private var checkAmount = ""
+    @State private var numberOfPeople = 0
+    @State private var tipPercentage = 2
+    let tipPercentages = [10, 15, 20, 25, 0]
+    var totalPerPerson: Double {
+        let peopleCount = Double(numberOfPeople + 2)
+        let tipSelection = Double(tipPercentages[tipPercentage])
+        let orderAmount = Double(checkAmount) ?? 0
+        
+        let tipValue = orderAmount / 100 * tipSelection
+        let grandTotal = orderAmount + tipValue
+        let amountPerPerson = grandTotal / peopleCount
+        
+        return amountPerPerson
+    }
+    
+//    Homework 2 in comments!
     
     var body: some View {
         NavigationView {
             Form {
-                Text(greeting)
-//                Two-way binding (read & write):
-                TextField("Enter your name", text: $name)
-//                One-way binding (read only):
-                Button("Tap Count \(count)") {
-                    self.count += 1
-                }
-                Picker("Select your friend", selection: $selectedFriend) {
-                    ForEach(0 ..< friends.count) {
-                       number in Text(self.friends[number])
+                Section {
+//                    This section should also have a header
+                    TextField("Amount", text: $checkAmount)
+                        .keyboardType(.decimalPad)
+                    
+//                    It can be a text field with number keyboard
+//                    But to indicate that it is a number of people it should be a separate section with a header
+                    Picker("Number of people", selection: $numberOfPeople) {
+                        ForEach(2..<100) {
+                            Text("\($0) people")
+                        }
                     }
                 }
-                Text("Your selected friend: Friend #\(friends[selectedFriend])")
+                Section(header: Text("How much tip do you want to leave?")) {
+                    Picker("Tip percentage", selection: $tipPercentage) {
+                        ForEach(0 ..< tipPercentages.count) {
+                            Text("\(self.tipPercentages[$0])%")
+                        }
+                    }
+                    .pickerStyle(SegmentedPickerStyle())
+                }
+//                We can also add a separate section that will contain a segmented picker that will display a list of emojis***
+//                indicating the level of service
+                
+//                We can also add another section that will contain a text box where user can provide notes
+                Section {
+                    Text("$\(totalPerPerson, specifier: "%.2f")")
+                }
             }
-            .navigationBarTitle("Title", displayMode: .inline)
+        .navigationBarTitle("Splitter")
         }
     }
 }
