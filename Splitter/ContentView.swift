@@ -10,11 +10,14 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var checkAmount = ""
-    @State private var numberOfPeople = 0
+    @State private var numberOfPeople = ""
     @State private var tipPercentage = 2
+    @State private var satisfactionSelection = 1
+    @State private var comment = ""
     let tipPercentages = [10, 15, 20, 25, 0]
+    let satisfactionSelections = ["😃", "🙂", "🙁"]
     var totalPerPerson: Double {
-        let peopleCount = Double(numberOfPeople + 2)
+        let peopleCount = Double(numberOfPeople) ?? 1 
         let tipSelection = Double(tipPercentages[tipPercentage])
         let orderAmount = Double(checkAmount) ?? 0
         
@@ -25,24 +28,22 @@ struct ContentView: View {
         return amountPerPerson
     }
     
-//    Homework 2 in comments!
-    
     var body: some View {
         NavigationView {
             Form {
-                Section {
-//                    This section should also have a header
+                Section(header: Text("Cheque Total")) {
+
                     TextField("Amount", text: $checkAmount)
                         .keyboardType(.decimalPad)
-                    
-//                    It can be a text field with number keyboard
-//                    But to indicate that it is a number of people it should be a separate section with a header
-                    Picker("Number of people", selection: $numberOfPeople) {
-                        ForEach(2..<100) {
-                            Text("\($0) people")
-                        }
-                    }
                 }
+                
+            
+                Section(header: Text("Number of People")) {
+
+                    TextField("Number of people", text: $numberOfPeople)
+                        .keyboardType(.decimalPad)
+                }
+                
                 Section(header: Text("How much tip do you want to leave?")) {
                     Picker("Tip percentage", selection: $tipPercentage) {
                         ForEach(0 ..< tipPercentages.count) {
@@ -51,12 +52,22 @@ struct ContentView: View {
                     }
                     .pickerStyle(SegmentedPickerStyle())
                 }
-//                We can also add a separate section that will contain a segmented picker that will display a list of emojis***
-//                indicating the level of service
-                
-//                We can also add another section that will contain a text box where user can provide notes
+
                 Section {
                     Text("$\(totalPerPerson, specifier: "%.2f")")
+                }
+                
+                Section(header: Text("Rate Our Service")) {
+                    Picker("Satisfaction Level", selection: $satisfactionSelection) {
+                        ForEach(0 ..< satisfactionSelections.count) {
+                            Text("\(self.satisfactionSelections[$0])")
+                        }
+                    }
+                    .pickerStyle(SegmentedPickerStyle())
+                }
+                
+                Section(header: Text("Comments")) {
+                    TextField("Leave your comments", text: $comment)
                 }
             }
         .navigationBarTitle("Splitter")
