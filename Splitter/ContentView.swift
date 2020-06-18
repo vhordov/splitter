@@ -28,6 +28,8 @@ struct ContentView: View {
         return amountPerPerson
     }
     
+//    Homework 2 in comments!
+    
     var body: some View {
         NavigationView {
             Form {
